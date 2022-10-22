@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Navbar } from './core/Navbar';
+import { PageHome } from './features/PageHome';
+import { PageSettings } from './features/PageSettings';
+
+// Now the PageAdmin component (and all the JavaScript it uses) is loaded only when 
+// the section is visited.
+const PageAdmin = lazy(() => import('./features/PageAdmin'));
+const PageContacts = lazy(() => import('./features/PageContacts'));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div>
+        <Navbar />
+
+        <Routes>
+          <Route path="/home" element={<PageHome />} />
+          <Route path="/settings" element={<PageSettings />} />
+          <Route path="/admin" element={
+            <React.Suspense fallback={<>...</>}>
+              <PageAdmin />
+            </React.Suspense>
+          } />
+          <Route path="/contacts" element={
+            <React.Suspense fallback={<>...</>}>
+              <PageContacts />
+            </React.Suspense>
+          } />
+          <Route path="*" element={
+            <Navigate to="/home" />
+          } />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
